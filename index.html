@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body{
+            display: flex;
+            justify-content: center;
+        }
+
+        .parent{
+            width: 50%;
+            height: 100%;
+            border-style: solid;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+        .child{
+            gap: 20px;
+            line-height: 30px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="parent">
+
+        <div class="child">
+
+            <h1>Finance Calculator</h1>
+            
+            <select id="carBrand" onchange="reset()">
+                <option value="">Select Car Brand</option>
+                <option value="toyota">Toyota</option>
+                <option value="mitsubishi">Mitsubishi</option>
+                <option value="honda">Honda</option>
+            </select>
+            <br>
+            
+            <button id="btnConfirm" >Choose Brand</button>
+            <br>
+
+            <label for="">Select Car Model:</label>
+            <select id="carUnit"></select>
+            <br>
+
+
+        
+            <label for="">Unit Price:</label>
+            <input type="text" id="txtUnitPrice">
+            <br>
+        
+            <label for="">Down Payment (%):</label>
+            <input type="text" id="txtDownPayment">
+            <br>
+        
+            <label for="">Interest Rate (%):</label>
+            <input type="text" id="txtInterestRate">
+            <br>
+        
+            <label for="">Loan Term:</label>
+            <select id="dbLoanTerm">
+                <option value="12m">1 year</option>
+                <option value="24m">2 year</option>
+                <option value="36m">3 year</option>
+            </select>
+            <br>
+        
+            <label for="">Include Insurance:</label>
+            <input type="checkbox" id="cbIncludeInsurance">
+            <br>
+        
+            <button id="btn2">Calculate</button>
+        
+            <div id="txtResult"></div>
+
+        </div>
+
+        <div id="demo2"></div>
+
+    </div>
+
+    <script>
+        
+        const btnConfirm = document.getElementById('btnConfirm')
+        const carUnit = document.getElementById("carUnit")
+
+        const unitPrice = document.getElementById('txtUnitPrice')
+        const downPayment = document.getElementById('txtDownPayment')
+        const interestRate = document.getElementById('txtInterestRate')   
+        const loanTerm = document.getElementById('dbLoanTerm')  
+
+        const includeInsurance = document.getElementById('cbIncludeInsurance')
+
+        const btnCalculate = document.getElementById('btn2')
+
+        const result = document.getElementById('txtResult')
+
+        
+
+        function removeOption (selectElement){
+            var i, L = selectElement.options.length - 1;
+            for(i = L; i >=0; i--){
+                selectElement.remove(i)
+            }
+        }
+
+        function reset(){
+            removeOption(document.getElementById('carUnit'));
+            document.getElementById("carUnit").innerHTML = "";
+            unitPrice.value = "";
+
+            downPayment.value = "";
+            interestRate.value = "";
+
+
+            document.getElementById("cbIncludeInsurance").checked = false;
+
+        }
+
+        btnConfirm.addEventListener('click', function(){
+            if(carBrand.value == 'toyota'){
+                removeOption(document.getElementById('carUnit'))
+                
+                let fUnit = document.createElement("option")
+                fUnit.text = "Toyota GR86"
+
+                let sUnit = document.createElement("option")
+                sUnit.text = "Toyota GT86"
+
+                unitPrice.value = 820000
+
+                carUnit.add(fUnit)
+                carUnit.add(sUnit)
+
+            } else if(carBrand.value == 'mitsubishi'){
+                removeOption(document.getElementById('carUnit'))
+
+                let fUnit = document.createElement("option")
+                fUnit.text = "Mitsubishi Lancer Evo I"
+
+                let sUnit = document.createElement("option")
+                sUnit.text = "Mitsubishi Lancer Evo II"
+
+                unitPrice.value = 750000
+
+                carUnit.add(fUnit)
+                carUnit.add(sUnit)
+
+            } else {
+                removeOption(document.getElementById('carUnit'))
+
+                let fUnit = document.createElement("option")
+                fUnit.text = "Honda Civic Type R"
+
+                let sUnit = document.createElement("option")
+                sUnit.text = "Honda Civic Si"
+
+                unitPrice.value = 800000
+
+                carUnit.add(fUnit)
+                carUnit.add(sUnit)
+            }
+
+        })
+
+        btnCalculate.addEventListener('click', function(){
+            const dpResult = parseFloat(downPayment.value) / 100
+            const irResult = parseFloat(interestRate.value) / 100
+
+            const totalDP = dpResult * parseFloat(unitPrice.value)
+            const totalRemain = totalDP - parseFloat(unitPrice.value)
+
+            let monthly = ''
+            let yearstoPay = ''
+
+            if (loanTerm.value == "12m"){
+                monthly = totalRemain / 12
+                yearstoPay = 12
+            } else if (loanTerm.value == "24m"){
+                monthly = totalRemain / 24
+                yearstoPay = 24
+            }  else if (loanTerm.value == "36m"){
+                monthly = totalRemain / 36
+                yearstoPay = 36
+            } 
+
+            const totalInterestRate = monthly * irResult
+            const totalMonthly = monthly + totalInterestRate
+
+            const totalPaid = totalMonthly * yearstoPay
+
+            if (includeInsurance.checked) {
+                alert("You are Inssured")
+
+                result.innerHTML = `<h1>Car Details: </h1>
+                Downpayment: ${totalDP} <br>
+                Amount Financed: ${Math.abs(totalRemain)} <br>
+                Interest Rate: ${Math.abs(totalInterestRate)} <br>
+                Monthly Payment: ${Math.abs(totalMonthly)} <br>
+                Total Paid: ${Math.abs(totalPaid)} <br>`
+            } else if (includeInsurance.unchecked) {
+                result.innerHTML = `<h1>Car Details: </h1>
+                Downpayment: ${totalDP} <br>
+                Amount Financed: ${Math.abs(totalRemain)} <br>
+                Interest Rate: ${Math.abs(totalInterestRate)} <br>
+                Monthly Payment: ${Math.abs(totalMonthly)} <br>
+                Total Paid: ${Math.abs(totalPaid)}`
+            } else {
+                result.innerHTML = "Please fill out the form properly"
+            }
+            
+        })
+
+    </script>
+
+</body>
+</html>
